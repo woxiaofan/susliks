@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>index</title>
+	<style>
+		.box{overflow: hidden;width:420px;margin: 100px auto}
+		._box{width: 100px;height: 100px;float: left;margin-right:5px;margin-bottom: 5px;background-color: #4cae4c}
+		.cursor{height: 415px}
+		.cursor:hover{cursor:url("img/hammer.png"),auto}
+		.box label input{width: 50px;margin-bottom: 20px;margin-left: 10px}
+		.box button{margin-left: 20%}
+		.mouse{width: 100%;height: 100%; background: url("img/mouse.png") no-repeat -20px -20px}
+		.mouse_change{width: 100%;height: 100%;background: url("img/mouse.png") no-repeat -428px -20px}
+	</style>
+</head>
+<body>
+	<div class="box">
+		<button id="start">开始游戏</button><button id="finish">结束游戏</button>
+		<br><br>
+		<label>分数：<input type="text" id="score"></label>
+		<label>命中率：<input type="text" id="rate"></label>
+		<label>倒计时：<input type="text" id="timeout"></label>
+		<div class="cursor">
+			<div class="_box"></div><div class="_box"></div><div class="_box"></div><div class="_box"></div>
+			<div class="_box"></div><div class="_box"></div><div class="_box"></div><div class="_box"></div>
+			<div class="_box"></div><div class="_box"></div><div class="_box"></div><div class="_box"></div>
+			<div class="_box"></div><div class="_box"></div><div class="_box"></div><div class="_box"></div>
+		</div>
+	</div>
+</body>
+<script>
+var start = document.getElementById('start');
+var finish = document.getElementById('finish');
+var _boxs = document.getElementsByClassName('_box');
+var score = document.getElementById('score');
+var rate = document.getElementById('rate');
+var timeout = document.getElementById('timeout');
+var time,flag=true;
+/*任意两数之间的随机数*/
+function selectFrom(x,y){
+	var choice = y-x;
+	return Math.floor(Math.random()*choice+x);
+};
+var count = 0,mouse = 0;
+/*随机出现地鼠*/
+start.onclick = function(){
+	score.value = 0;
+	rate.value = 1.00;
+	timeout.value = 30;
+	if(flag){
+		time = setInterval(function(){
+			count++;//地鼠个数
+			var i = selectFrom(0,16);//随机获取第几个格子
+			if(_boxs[i ].innerHTML == ''){
+				_boxs[i ].innerHTML = '<div class="mouse"></div>';
+				setTimeout(function(){
+					_boxs[i ].innerHTML = '';
+				},3000)
+			}
+			timeout.value = parseInt(timeout.value)-1;//倒计时
+			rate.value = (mouse/count).toFixed(2);
+			if(timeout.value == 0){
+				alert('时间到,您得分为：'+score.value+'分！'+'命中率为：'+rate.value*100+'%');
+				finishGame();
+			}
+		},1000);
+
+	}
+	flag = false;
+};
+
+/*结束游戏-清除地鼠*/
+function finishGame(){
+	clearInterval(time);
+	for(var i=0;i<_boxs.length;i++){
+		_boxs[i ].innerHTML = '';
+	}
+	flag = true;
+}
+finish.onclick = function(){
+	finishGame();
+	timeout.value = 0;
+};
+/*开始打地鼠*/
+for(var i=0;i<_boxs.length;i++){
+	_boxs[i ].onclick = function(){
+		if(this.innerHTML!=''){
+			score.value = parseInt(score.value)+1;
+			mouse ++;//击中的地鼠个数
+			var _this = this;
+			this.innerHTML = '<div class="mouse_change"></div>';
+			setTimeout(function(){
+				_this.innerHTML = '';
+			},300)
+		}
+	}
+}
+</script>
+</html>
